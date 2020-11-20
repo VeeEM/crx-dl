@@ -3,7 +3,6 @@ module Main where
 
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.HTTP.Client.TLS as HTTP
-import qualified Network.HTTP.Types.Status as HTTP
 import qualified Network.HTTP.Types.Header as HTTP
 import qualified Data.ByteString.Lazy as BSL
 import System.Environment
@@ -18,13 +17,7 @@ getWithUserAgent url = do
     HTTP.httpLbs request manager
 
 dlUrl :: String -> String -> String
-dlUrl prodver extid = "https://clients2.google.com/service/update2/crx?response=redirect&prodversion=" ++ prodver  ++ "&x=id%3D" ++ extid ++ "%26uc"
-
-saveResponse :: String -> String -> IO ()
-saveResponse url path = do
-    response <- getWithUserAgent url
-    let responseBody = HTTP.responseBody response
-    BSL.writeFile path responseBody
+dlUrl prodver extid = "https://clients2.google.com/service/update2/crx?response=redirect&prodversion=" ++ prodver  ++ "&acceptformat=crx3" ++ "&x=id%3D" ++ extid ++ "%26uc"
 
 main :: IO ()
 main = do
@@ -32,5 +25,5 @@ main = do
   if length arg /= 32
      then putStrLn "Extension id must be 32 characters long."
      else do
-       response <- getWithUserAgent $ dlUrl "83" arg
+       response <- getWithUserAgent $ dlUrl "83.0.4103.116" arg
        BSL.writeFile (arg ++ ".crx") (HTTP.responseBody response)
